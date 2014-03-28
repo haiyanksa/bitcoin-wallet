@@ -52,12 +52,12 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.TimeBasedRollingPolicy;
 
-import com.google.bitcoin.core.Address;
 import com.google.bitcoin.core.ECKey;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.VerificationException;
 import com.google.bitcoin.core.VersionMessage;
 import com.google.bitcoin.core.Wallet;
+import com.google.bitcoin.crypto.MnemonicCode;
 import com.google.bitcoin.store.UnreadableWalletException;
 import com.google.bitcoin.store.WalletProtobufSerializer;
 import com.google.bitcoin.utils.Threading;
@@ -116,6 +116,8 @@ public class WalletApplication extends Application
 				CrashReporter.saveBackgroundTrace(throwable, packageInfo);
 			}
 		};
+
+		initMnemonicCode();
 
 		config = new Configuration(PreferenceManager.getDefaultSharedPreferences(this));
 		activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -193,6 +195,18 @@ public class WalletApplication extends Application
 		log.addAppender(fileAppender);
 		log.addAppender(logcatAppender);
 		log.setLevel(Level.INFO);
+	}
+
+	private void initMnemonicCode()
+	{
+		try
+		{
+			MnemonicCode.INSTANCE = new MnemonicCode(getAssets().open("bip39-wordlist.txt"), null);
+		}
+		catch (final IOException x)
+		{
+			throw new Error(x);
+		}
 	}
 
 	private static final class WalletAutosaveEventListener implements WalletFiles.Listener
@@ -285,6 +299,10 @@ public class WalletApplication extends Application
 		{
 			wallet = new Wallet(Constants.NETWORK_PARAMETERS);
 
+			backupWallet();
+
+			config.armBackupReminder();
+
 			log.info("new wallet created");
 		}
 
@@ -348,11 +366,7 @@ public class WalletApplication extends Application
 
 	public void addNewKeyToWallet()
 	{
-		wallet.addKey(new ECKey());
-
-		backupWallet();
-
-		config.armBackupReminder();
+		wallet.importKey(wallet.freshReceiveKey());
 	}
 
 	public void saveWallet()
@@ -452,28 +466,6 @@ public class WalletApplication extends Application
 				if (filename.startsWith(Constants.Files.WALLET_KEY_BACKUP_BASE58))
 					new File(getFilesDir(), filename).delete();
 		}
-	}
-
-	public Address determineSelectedAddress()
-	{
-		final String selectedAddress = config.getSelectedAddress();
-
-		Address firstAddress = null;
-		for (final ECKey key : wallet.getImportedKeys())
-		{
-			if (!wallet.isKeyRotating(key))
-			{
-				final Address address = key.toAddress(Constants.NETWORK_PARAMETERS);
-
-				if (address.toString().equals(selectedAddress))
-					return address;
-
-				if (firstAddress == null)
-					firstAddress = address;
-			}
-		}
-
-		return firstAddress;
 	}
 
 	public void startBlockchainService(final boolean cancelCoinsReceived)

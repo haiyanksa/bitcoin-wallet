@@ -110,7 +110,6 @@
   <string name="address_book_context_remove_title">移除地址</string>
   <string name="address_book_context_show_qr_title">顯示 QR 二維條碼</string>
   <string name="address_book_context_copy_to_clipboard_title">複製到剪貼簿</string>
-  <string name="address_book_context_default_title">設為預設地址</string>
   <string name="address_book_options_paste_from_clipboard_title">從剪貼簿貼上</string>
   <string name="address_book_options_paste_from_clipboard_empty">剪貼簿是空的。</string>
   <string name="address_book_options_paste_from_clipboard_invalid">剪貼簿資料無法辨識</string>
