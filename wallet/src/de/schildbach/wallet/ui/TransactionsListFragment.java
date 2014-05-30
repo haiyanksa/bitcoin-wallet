@@ -17,7 +17,6 @@
 
 package de.schildbach.wallet.ui;
 
-import java.math.BigInteger;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -63,6 +62,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import com.google.bitcoin.core.Address;
+import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.ScriptException;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.Transaction.Purpose;
@@ -250,7 +250,7 @@ public class TransactionsListFragment extends ListFragment implements LoaderCall
 					mode.setTitle(time != null ? (DateUtils.isToday(time.getTime()) ? getString(R.string.time_today) : dateFormat.format(time))
 							+ ", " + timeFormat.format(time) : null);
 
-					final BigInteger value = tx.getValue(wallet);
+					final Coin value = tx.getValue(wallet);
 					final boolean sent = value.signum() < 0;
 
 					address = sent ? WalletUtils.getFirstToAddress(tx) : WalletUtils.getFirstFromAddress(tx);

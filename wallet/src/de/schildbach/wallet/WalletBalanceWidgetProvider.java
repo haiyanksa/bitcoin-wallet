@@ -17,8 +17,6 @@
 
 package de.schildbach.wallet;
 
-import java.math.BigInteger;
-
 import javax.annotation.Nonnull;
 
 import android.app.PendingIntent;
@@ -31,6 +29,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.widget.RemoteViews;
 
+import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
 
@@ -52,13 +51,13 @@ public class WalletBalanceWidgetProvider extends AppWidgetProvider
 	{
 		final WalletApplication application = (WalletApplication) context.getApplicationContext();
 		final Wallet wallet = application.getWallet();
-		final BigInteger balance = wallet.getBalance(BalanceType.ESTIMATED);
+		final Coin balance = wallet.getBalance(BalanceType.ESTIMATED);
 
 		updateWidgets(context, appWidgetManager, appWidgetIds, balance);
 	}
 
 	public static void updateWidgets(final Context context, @Nonnull final AppWidgetManager appWidgetManager, @Nonnull final int[] appWidgetIds,
-			@Nonnull final BigInteger balance)
+			@Nonnull final Coin balance)
 	{
 		final Configuration config = new Configuration(PreferenceManager.getDefaultSharedPreferences(context));
 		final Spannable balanceStr = new SpannableString(GenericUtils.formatValue(balance, config.getBtcPrecision(), config.getBtcShift()));
