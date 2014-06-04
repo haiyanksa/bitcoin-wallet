@@ -26,19 +26,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.preference.PreferenceManager;
 import android.text.Spannable;
-import android.text.SpannableString;
 import android.widget.RemoteViews;
 
 import com.google.bitcoin.core.Coin;
 import com.google.bitcoin.core.Wallet;
 import com.google.bitcoin.core.Wallet.BalanceType;
+import com.google.bitcoin.utils.CoinFormat;
 
 import de.schildbach.wallet.ui.RequestCoinsActivity;
 import de.schildbach.wallet.ui.SendCoinsQrActivity;
 import de.schildbach.wallet.ui.WalletActivity;
 import de.schildbach.wallet.ui.send.SendCoinsActivity;
-import de.schildbach.wallet.util.GenericUtils;
-import de.schildbach.wallet.util.WalletUtils;
+import de.schildbach.wallet.util.CoinSpannable;
 import de.schildbach.wallet_test.R;
 
 /**
@@ -60,13 +59,13 @@ public class WalletBalanceWidgetProvider extends AppWidgetProvider
 			@Nonnull final Coin balance)
 	{
 		final Configuration config = new Configuration(PreferenceManager.getDefaultSharedPreferences(context));
-		final Spannable balanceStr = new SpannableString(GenericUtils.formatValue(balance, config.getBtcPrecision(), config.getBtcShift()));
-		WalletUtils.formatSignificant(balanceStr, WalletUtils.SMALLER_SPAN);
+		final CoinFormat btcFormat = config.getFormat();
+		final Spannable balanceStr = new CoinSpannable(btcFormat.noCode(), balance).applyMarkup(null, null, CoinSpannable.SMALLER_SPAN);
 
 		for (final int appWidgetId : appWidgetIds)
 		{
 			final RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.wallet_balance_widget_content);
-			views.setTextViewText(R.id.widget_wallet_prefix, config.getBtcPrefix());
+			views.setTextViewText(R.id.widget_wallet_prefix, btcFormat.code());
 			views.setTextViewText(R.id.widget_wallet_balance, balanceStr);
 			views.setOnClickPendingIntent(R.id.widget_button_balance,
 					PendingIntent.getActivity(context, 0, new Intent(context, WalletActivity.class), 0));

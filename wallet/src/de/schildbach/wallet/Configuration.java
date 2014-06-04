@@ -28,6 +28,9 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.text.format.DateUtils;
+
+import com.google.bitcoin.utils.CoinFormat;
+
 import de.schildbach.wallet.ExchangeRatesProvider.ExchangeRate;
 
 /**
@@ -69,12 +72,7 @@ public class Configuration
 		this.lastVersionCode = prefs.getInt(PREFS_KEY_LAST_VERSION, 0);
 	}
 
-	public boolean hasBtcPrecision()
-	{
-		return prefs.contains(PREFS_KEY_BTC_PRECISION);
-	}
-
-	public int getBtcPrecision()
+	private int getBtcPrecision()
 	{
 		final String precision = prefs.getString(PREFS_KEY_BTC_PRECISION, null);
 		if (precision != null)
@@ -83,7 +81,7 @@ public class Configuration
 			return PREFS_DEFAULT_BTC_PRECISION;
 	}
 
-	public int getBtcMaxPrecision()
+	private int getBtcMaxPrecision()
 	{
 		final int btcShift = getBtcShift();
 
@@ -104,16 +102,17 @@ public class Configuration
 			return PREFS_DEFAULT_BTC_SHIFT;
 	}
 
-	public String getBtcPrefix()
+	public CoinFormat getFormat()
 	{
-		final int btcShift = getBtcShift();
+		final int shift = getBtcShift();
+		final int minPrecision = shift <= 3 ? 2 : 0;
+		final int decimalRepetitions = (getBtcPrecision() - minPrecision) / 2;
+		return new CoinFormat().shift(shift).minDecimals(minPrecision).repeatOptionalDecimals(2, decimalRepetitions);
+	}
 
-		if (btcShift == 0)
-			return Constants.CURRENCY_CODE_BTC;
-		else if (btcShift == 3)
-			return Constants.CURRENCY_CODE_MBTC;
-		else
-			return Constants.CURRENCY_CODE_UBTC;
+	public CoinFormat getMaxPrecisionFormat()
+	{
+		return getFormat().minDecimals(getBtcMaxPrecision());
 	}
 
 	public boolean getConnectivityNotificationEnabled()
