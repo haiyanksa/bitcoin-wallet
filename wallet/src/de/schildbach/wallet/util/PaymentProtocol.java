@@ -88,8 +88,8 @@ public final class PaymentProtocol
 			{
 				// implicitly verify PKI signature
 				final PkiVerificationData verificationData = new PaymentSession(paymentRequest, true).pkiVerificationData;
-				pkiName = verificationData.name;
-				pkiOrgName = verificationData.orgName;
+				pkiName = verificationData.displayName;
+				pkiOrgName = null;
 				pkiCaName = verificationData.rootAuthorityName;
 			}
 			else
