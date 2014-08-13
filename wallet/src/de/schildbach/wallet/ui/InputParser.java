@@ -40,8 +40,8 @@ import com.google.bitcoin.core.NetworkParameters;
 import com.google.bitcoin.core.ProtocolException;
 import com.google.bitcoin.core.Transaction;
 import com.google.bitcoin.core.VerificationException;
-import com.google.bitcoin.protocols.payments.PaymentRequestException;
-import com.google.bitcoin.protocols.payments.PaymentRequestException.PkiVerificationException;
+import com.google.bitcoin.protocols.payments.PaymentProtocolException;
+import com.google.bitcoin.protocols.payments.PaymentProtocolException.PkiVerificationException;
 import com.google.bitcoin.uri.BitcoinURI;
 import com.google.bitcoin.uri.BitcoinURIParseException;
 
@@ -91,7 +91,7 @@ public abstract class InputParser
 
 					error(R.string.input_parser_unverifyable_paymentrequest, x.getMessage());
 				}
-				catch (final PaymentRequestException x)
+				catch (final PaymentProtocolException x)
 				{
 					log.info("got invalid payment request", x);
 
@@ -213,13 +213,13 @@ public abstract class InputParser
 				{
 					parseAndHandlePaymentRequest(input);
 				}
-				catch (final PkiVerificationException x)
+				catch (final PaymentProtocolException.PkiVerificationException x)
 				{
 					log.info("got unverifyable payment request", x);
 
 					error(R.string.input_parser_unverifyable_paymentrequest, x.getMessage());
 				}
-				catch (final PaymentRequestException x)
+				catch (final PaymentProtocolException x)
 				{
 					log.info("got invalid payment request", x);
 
@@ -281,7 +281,7 @@ public abstract class InputParser
 
 					error(R.string.input_parser_unverifyable_paymentrequest, x.getMessage());
 				}
-				catch (final PaymentRequestException x)
+				catch (final PaymentProtocolException x)
 				{
 					log.info("got invalid payment request", x);
 
@@ -330,7 +330,7 @@ public abstract class InputParser
 
 	public abstract void parse();
 
-	protected final void parseAndHandlePaymentRequest(@Nonnull final byte[] serializedPaymentRequest) throws PaymentRequestException
+	protected final void parseAndHandlePaymentRequest(@Nonnull final byte[] serializedPaymentRequest) throws PaymentProtocolException
 	{
 		final PaymentIntent paymentIntent = PaymentProtocol.parsePaymentRequest(serializedPaymentRequest);
 
