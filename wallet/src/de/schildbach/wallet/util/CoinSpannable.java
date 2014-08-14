@@ -31,7 +31,7 @@ import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 
-import com.google.bitcoin.core.Coin;
+import com.google.bitcoin.core.Monetary;
 import com.google.bitcoin.utils.CoinFormat;
 
 import de.schildbach.wallet.Constants;
@@ -41,17 +41,17 @@ import de.schildbach.wallet.Constants;
  */
 public final class CoinSpannable extends SpannableString
 {
-	public CoinSpannable(final CoinFormat format, final boolean signed, @Nullable final Coin coin)
+	public CoinSpannable(final CoinFormat format, final boolean signed, @Nullable final Monetary coin)
 	{
 		super(format(format, signed, coin));
 	}
 
-	public CoinSpannable(final CoinFormat format, @Nullable final Coin coin)
+	public CoinSpannable(final CoinFormat format, @Nullable final Monetary coin)
 	{
 		super(format(format, false, coin));
 	}
 
-	private static CharSequence format(final CoinFormat format, final boolean signed, final Coin coin)
+	private static CharSequence format(final CoinFormat format, final boolean signed, final Monetary coin)
 	{
 		if (coin == null)
 			return "";
