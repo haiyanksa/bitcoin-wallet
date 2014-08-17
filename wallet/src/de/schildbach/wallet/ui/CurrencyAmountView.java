@@ -280,17 +280,7 @@ public final class CurrencyAmountView extends FrameLayout
 					amount = inputFormat.parseFiat(localCurrencyCode, str);
 
 				// exactly zero
-				if (zeroIsValid && amount.signum() == 0)
-					return true;
-
-				if (amount instanceof Coin)
-				{
-					// too small
-					if (((Coin) amount).compareTo(Transaction.MIN_NONDUST_OUTPUT) < 0)
-						return false;
-				}
-
-				return true;
+				return zeroIsValid || amount.signum() > 0;
 			}
 		}
 		catch (final Exception x)
